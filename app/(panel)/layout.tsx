@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import { Brand } from "@/components/brand";
 import { SideNav, TabBar } from "@/components/shell/nav";
 import { UserMenu } from "@/components/shell/user-menu";
+import { TimerProvider } from "@/components/timers";
 import { requireUser } from "@/lib/auth/session";
 import { imageUrl } from "@/lib/cloudinary";
 import { SITE_NAME } from "@/lib/site";
@@ -16,6 +17,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
     : null;
 
   return (
+    <TimerProvider>
     <div className="shell">
       <aside className="sidebar">
         <Brand />
@@ -32,5 +34,6 @@ export default async function PanelLayout({ children }: { children: React.ReactN
       </div>
       <TabBar />
     </div>
+    </TimerProvider>
   );
 }
