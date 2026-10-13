@@ -1,0 +1,26 @@
+# bağımlılıklar
+/node_modules
+
+# next.js
+/.next/
+/out/
+next-env.d.ts
+*.tsbuildinfo
+
+# gizli bilgiler: hiçbir .env dosyası repoya girmez
+.env*
+
+# vercel
+.vercel
+
+# ham ürün görselleri (işlenmiş halleri public/products altında)
+/gorseller/
+
+# sistem / log
+.DS_Store
+Thumbs.db
+desktop.ini
+npm-debug.log*
+
+# yerel araç ayarları
+/.claude/
