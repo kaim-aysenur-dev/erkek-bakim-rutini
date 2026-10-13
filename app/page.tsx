@@ -1,14 +1,14 @@
 import { redirect } from "next/navigation";
 import { BrandMark } from "@/components/brand";
 import { LoginForm } from "@/components/login-form";
-import { getCurrentUser } from "@/lib/auth/session";
+import { getSession } from "@/lib/auth/session";
 import { safeNextPath } from "@/lib/identity";
 import { SITE_NAME } from "@/lib/site";
 
 // Ana sayfa = giriş sayfası. Oturum açıksa doğrudan Bugün'e geçer.
 export default async function HomePage({ searchParams }: PageProps<"/">) {
-  const user = await getCurrentUser();
-  if (user) redirect(user.mustChangePassword ? "/sifre-degistir" : "/bugun");
+  const session = await getSession();
+  if (session) redirect(session.mustChangePassword ? "/sifre-degistir" : session.profile ? "/bugun" : "/profil-sec");
 
   const { sonra } = await searchParams;
   const next = safeNextPath(sonra) ?? undefined;

@@ -50,10 +50,10 @@ export async function POST(req: NextRequest) {
 
   const rows =
     ident.kind === "email"
-      ? await db`select id, password_hash, must_change_password from users where email = ${ident.value}`
-      : await db`select id, password_hash, must_change_password from users where username = ${ident.value}`;
-  const user = rows[0];
-  const ok = user ? await verifyPassword(password, user.password_hash) : await burnPasswordCheck(password);
+      ? await db`select id, password_hash, must_change_password from accounts where email = ${ident.value}`
+      : await db`select id, password_hash, must_change_password from accounts where username = ${ident.value}`;
+  const account = rows[0];
+  const ok = account ? await verifyPassword(password, account.password_hash) : await burnPasswordCheck(password);
 
   await db`insert into login_attempts (identifier, ip, ok) values (${ident.value}, ${ip}, ${ok})`;
 
@@ -67,16 +67,25 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // Hesapta tek profil varsa doğrudan seçilir; birden fazlaysa "Kim kullanıyor?" sorulur
+  const profiles = await db`select id from users where account_id = ${account.id}`;
+  const profileId = profiles.length === 1 ? profiles[0]!.id : null;
+
   const { value, sessionId } = await createSessionCookie();
   const seconds = remember ? REMEMBER_SECONDS : SHORT_SESSION_SECONDS;
   const expiresAt = new Date(Date.now() + seconds * 1000).toISOString();
-  await db`insert into sessions (id, user_id, remember, expires_at)
-           values (${await hashSessionId(sessionId)}, ${user.id}, ${remember}, ${expiresAt})`;
-  // temizlik: bu kullanıcının hatalı denemeleri, eski kayıtlar, süresi dolmuş oturumlar
+  await db`insert into sessions (id, account_id, user_id, remember, expires_at)
+           values (${await hashSessionId(sessionId)}, ${account.id}, ${profileId}, ${remember}, ${expiresAt})`;
+  // temizlik: bu hesabın hatalı denemeleri, eski kayıtlar, süresi dolmuş oturumlar
   await db`delete from login_attempts where (identifier = ${ident.value} and not ok) or at < now() - interval '2 days'`;
   await db`delete from sessions where expires_at < now()`;
 
-  const next = user.must_change_password ? "/sifre-degistir" : (safeNextPath(body?.next) ?? "/bugun");
+  const after = safeNextPath(body?.next);
+  const next = account.must_change_password
+    ? "/sifre-degistir"
+    : profileId
+      ? (after ?? "/bugun")
+      : `/profil-sec${after ? `?sonra=${encodeURIComponent(after)}` : ""}`;
   const res = jsonOk({ next });
   res.cookies.set(SESSION_COOKIE, value, {
     httpOnly: true,

@@ -3,15 +3,15 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ChevronDown, Settings } from "lucide-react";
+import { ChevronDown, Settings, Users } from "lucide-react";
 import { Avatar } from "@/components/avatar";
 import { LogoutButton } from "@/components/logout-button";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import type { Theme } from "@/lib/theme";
 
-type Props = { name: string; username: string; avatarUrl: string | null; theme: Theme };
+type Props = { name: string; account: string; avatarUrl: string | null; theme: Theme };
 
-export function UserMenu({ name, username, avatarUrl, theme }: Props) {
+export function UserMenu({ name, account, avatarUrl, theme }: Props) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
@@ -54,8 +54,11 @@ export function UserMenu({ name, username, avatarUrl, theme }: Props) {
         <div className="menu" role="menu">
           <div className="menu-head">
             <strong>{name}</strong>
-            <span>@{username}</span>
+            <span>Ortak hesap: {account}</span>
           </div>
+          <Link href="/profil-sec" role="menuitem">
+            <Users size={18} /> Profil değiştir
+          </Link>
           <Link href="/ayarlar" role="menuitem">
             <Settings size={18} /> Ayarlar
           </Link>

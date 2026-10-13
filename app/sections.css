@@ -1106,3 +1106,53 @@ details.as-needed[open] summary .chev {
   padding: 0 10px;
   font-size: 14px;
 }
+
+/* ---------- profil seçimi ---------- */
+
+.profile-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.profile-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  min-height: 168px;
+  padding: 20px 12px;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow-sm);
+  transition: border-color 0.15s ease, transform 0.1s ease;
+}
+
+.profile-option:hover:not(:disabled) {
+  border-color: var(--accent);
+}
+
+.profile-option:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+.profile-option[aria-current="true"] {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-soft);
+}
+
+.profile-name {
+  font: 700 17px/1.2 var(--display);
+  text-align: center;
+}
+
+.profile-current {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+}

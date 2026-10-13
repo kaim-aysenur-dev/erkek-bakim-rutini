@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { cookies } from "next/headers";
+import { Users } from "lucide-react";
 import { LogoutButton } from "@/components/logout-button";
 import { PasswordForm } from "@/components/password-form";
 import { ProfileForm } from "@/components/profile-form";
@@ -20,21 +22,29 @@ export default async function SettingsPage() {
   return (
     <main className="main narrow">
       <header className="page-head">
-        <p className="eyebrow">Hesap</p>
-        <h1>Ayarlar</h1>
+        <p className="eyebrow">Ayarlar</p>
+        <h1>{user.displayName}</h1>
       </header>
 
       <section className="card stack" aria-labelledby="profil">
-        <h2 id="profil">Profil</h2>
+        <div className="section-head" style={{ marginBottom: 0 }}>
+          <h2 id="profil">Profil</h2>
+          <Link href="/profil-sec" className="btn btn-quiet">
+            <Users size={18} /> Profil değiştir
+          </Link>
+        </div>
         <ProfileForm name={user.displayName} avatarUrl={avatarUrl} />
       </section>
 
       <section className="card stack" aria-labelledby="sifre">
         <div>
-          <h2 id="sifre">Şifre</h2>
-          <p className="muted">Şifren değişince diğer cihazlardaki oturumların kapanır.</p>
+          <h2 id="sifre">Ortak giriş şifresi</h2>
+          <p className="muted">
+            Giriş kullanıcı adı: <strong>{user.accountUsername}</strong>. Şifre ikiniz için ortak; değişince diğer
+            cihazlardaki oturumlar kapanır.
+          </p>
         </div>
-        <PasswordForm username={user.username} />
+        <PasswordForm username={user.accountUsername} />
       </section>
 
       <section className="card stack" aria-labelledby="tema">
@@ -45,10 +55,7 @@ export default async function SettingsPage() {
       <section className="card stack" aria-labelledby="oturum">
         <div>
           <h2 id="oturum">Oturum</h2>
-          <p className="muted">
-            @{user.username}
-            {user.email ? ` · ${user.email}` : ""} olarak giriş yaptın.
-          </p>
+          <p className="muted">Bu cihazdan çıkış yapar.</p>
         </div>
         <div>
           <LogoutButton />

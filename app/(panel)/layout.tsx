@@ -28,7 +28,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
         <header className="topbar">
           <Brand />
           <div className="topbar-spacer" />
-          <UserMenu name={user.displayName} username={user.username} avatarUrl={avatarUrl} theme={theme} />
+          <UserMenu name={user.displayName} account={user.accountUsername} avatarUrl={avatarUrl} theme={theme} />
         </header>
         {children}
       </div>

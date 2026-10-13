@@ -17,6 +17,6 @@ export function normalizeIdentifier(raw: string): { kind: "email" | "username"; 
 export function safeNextPath(value: unknown): string | null {
   if (typeof value !== "string") return null;
   if (!value.startsWith("/") || value.startsWith("//") || value.startsWith("/\\")) return null;
-  if (value === "/" || value.startsWith("/api/") || value.startsWith("/sifre-degistir")) return null;
+  if (value === "/" || value.startsWith("/api/") || value.startsWith("/sifre-degistir") || value.startsWith("/profil-sec")) return null;
   return value.slice(0, 300);
 }
