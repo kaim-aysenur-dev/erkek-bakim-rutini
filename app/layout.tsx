@@ -5,6 +5,7 @@ import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/site";
 import { THEME_COOKIE, parseTheme } from "@/lib/theme";
 import "./globals.css";
 import "./sections.css";
+import "./sections-2.css";
 
 const display = Bricolage_Grotesque({ subsets: ["latin", "latin-ext"], variable: "--font-display", display: "swap" });
 const body = Figtree({ subsets: ["latin", "latin-ext"], variable: "--font-body", display: "swap" });

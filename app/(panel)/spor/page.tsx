@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
-import { ComingSoon } from "@/components/coming-soon";
+import { WorkoutPlanEditor } from "@/components/sport/workout-plan";
 import { requireUser } from "@/lib/auth/session";
+import { todayIstanbul, weekdayIndex } from "@/lib/dates";
+import { getWorkoutPlan, listExercises } from "@/lib/sport";
 
-export const metadata: Metadata = { title: "Spor listesi" };
+export const metadata: Metadata = { title: "Spor · Plan" };
 
-export default async function Page() {
-  await requireUser();
-  return <ComingSoon eyebrow="Spor" title="Spor listesi" items={["Haftalık antrenman planı", "Hareket kütüphanesi", "Antrenman kaydı ve karşılaştırma", "Adım ve kardiyo kaydı"]} />;
+export default async function SportPlanPage() {
+  const user = await requireUser();
+  const [plan, exercises] = await Promise.all([getWorkoutPlan(user.id), listExercises(user.id)]);
+  return <WorkoutPlanEditor plan={plan} exercises={exercises} todayWeekday={weekdayIndex(todayIstanbul())} />;
 }

@@ -2,7 +2,6 @@ import "server-only";
 import { randomUUID } from "node:crypto";
 import { sql } from "@/lib/db";
 import { deleteImage, imageUrl } from "@/lib/cloudinary";
-import { addDays } from "@/lib/dates";
 import { ALL_SKIN_METRICS, SLOTS, type SkinMetric, type Slot } from "@/lib/slots";
 
 // Cilt bakımı veri katmanı. Bütün fonksiyonlar userId alır ve sorguları onunla sınırlar.
@@ -73,46 +72,6 @@ export async function setCheck(userId: string, day: string, itemId: string, done
     await sql()`delete from checks where user_id = ${userId} and day = ${day} and item_id = ${itemId}`;
   }
   return true;
-}
-
-/* ---------- seri ---------- */
-
-export type Streak = { current: number; best: number; todayComplete: boolean };
-
-/** Günlük adımların (sabah, akşam, duş) hepsinin yapıldığı aralıksız gün sayısı */
-export async function getSkinStreak(userId: string, today: string): Promise<Streak> {
-  const [{ n }] = await sql()`
-    select count(*)::int as n from routine_items ri left join products p on p.id = ri.product_id
-    where ri.user_id = ${userId} and ri.active and (p.id is null or not p.archived)
-      and ri.slot in ('sabah', 'aksam', 'dus')`;
-  if (!n) return { current: 0, best: 0, todayComplete: false };
-
-  const rows = await sql()`
-    select to_char(c.day, 'YYYY-MM-DD') as day
-    from checks c
-    join routine_items ri on ri.id = c.item_id
-    left join products p on p.id = ri.product_id
-    where c.user_id = ${userId} and c.day <= ${today} and ri.active and (p.id is null or not p.archived)
-      and ri.slot in ('sabah', 'aksam', 'dus')
-    group by c.day having count(*) >= ${n}
-    order by c.day`;
-  const days: string[] = rows.map((r) => r.day);
-  const complete = new Set(days);
-
-  let best = 0;
-  let run = 0;
-  let prev: string | null = null;
-  for (const day of days) {
-    run = prev && addDays(prev, 1) === day ? run + 1 : 1;
-    best = Math.max(best, run);
-    prev = day;
-  }
-
-  // Bugün henüz bitmediyse seri dünden sayılır, bozulmuş sayılmaz
-  const todayComplete = complete.has(today);
-  let current = 0;
-  for (let d = todayComplete ? today : addDays(today, -1); complete.has(d); d = addDays(d, -1)) current++;
-  return { current, best, todayComplete };
 }
 
 /* ---------- ürünler ---------- */
@@ -315,4 +274,71 @@ export async function deleteJournal(userId: string, day: string): Promise<boolea
   if (!row) return false;
   if (row.photo_public_id) await deleteImage(row.photo_public_id);
   return true;
+}
+
+/* ---------- rutin düzenleyici (ürünsüz adımlar, sıra, sayaç) ---------- */
+
+export type RoutineStepInput = { label: string; detail: string; timers: number[]; weeklyTarget: number | null };
+
+/** Ürüne bağlı olmayan adım ekler (ör. "Diş (florürlü macun)") */
+export async function createRoutineStep(userId: string, slot: Slot, v: RoutineStepInput): Promise<string> {
+  const [row] = await sql()`
+    insert into routine_items (user_id, product_id, slot, label, detail, weekly_target, timer_seconds, sort_order)
+    values (${userId}, null, ${slot}, ${v.label}, ${v.detail}, ${slot === "haftalik" ? (v.weeklyTarget ?? 1) : null},
+            ${v.timers}, (select coalesce(max(sort_order), 0) + 1 from routine_items where user_id = ${userId} and slot = ${slot}))
+    returning id`;
+  return row!.id;
+}
+
+export async function updateRoutineStep(userId: string, id: string, v: RoutineStepInput): Promise<boolean> {
+  const rows = await sql()`
+    update routine_items set label = ${v.label}, detail = ${v.detail}, timer_seconds = ${v.timers},
+      weekly_target = case when slot = 'haftalik' then ${v.weeklyTarget ?? 1}::int else null end
+    where id = ${id} and user_id = ${userId} and active returning id`;
+  return rows.length > 0;
+}
+
+/** Adımı rutinden çıkarır (geçmiş işaretler kalsın diye pasifleştirilir) */
+export async function removeRoutineStep(userId: string, id: string): Promise<boolean> {
+  const rows = await sql()`update routine_items set active = false where id = ${id} and user_id = ${userId} returning id`;
+  return rows.length > 0;
+}
+
+/** Adımı aynı zaman grubunda bir yukarı / aşağı taşır */
+export async function moveRoutineStep(userId: string, id: string, direction: -1 | 1): Promise<boolean> {
+  const db = sql();
+  const [item] = await db`select slot from routine_items where id = ${id} and user_id = ${userId} and active`;
+  if (!item) return false;
+  const rows = await db`
+    select id from routine_items where user_id = ${userId} and slot = ${item.slot} and active
+    order by sort_order, created_at`;
+  const ids = rows.map((r) => r.id as string);
+  const i = ids.indexOf(id);
+  const j = i + direction;
+  if (j < 0 || j >= ids.length) return true;
+  [ids[i], ids[j]] = [ids[j]!, ids[i]!];
+  await db.transaction(ids.map((rowId, index) => db`update routine_items set sort_order = ${index + 1} where id = ${rowId}`));
+  return true;
+}
+
+/** Düzenleyici için: adımın kendi sayacı (boşsa ürünün sayacı kullanılır) */
+export async function getRoutineForEdit(userId: string) {
+  const rows = await sql()`
+    select ri.id, ri.slot, ri.label, ri.detail, ri.weekly_target, ri.timer_seconds,
+           p.id as product_id, p.name as product_name, p.image_url, p.image_public_id, p.timer_seconds as product_timers
+    from routine_items ri left join products p on p.id = ri.product_id
+    where ri.user_id = ${userId} and ri.active and (p.id is null or not p.archived)
+    order by array_position(${SLOTS as unknown as string[]}::text[], ri.slot), ri.sort_order, ri.created_at`;
+  return rows.map((r) => ({
+    id: r.id as string,
+    slot: r.slot as Slot,
+    label: r.label as string,
+    detail: r.detail as string,
+    weeklyTarget: r.weekly_target as number | null,
+    timers: (r.timer_seconds ?? []) as number[],
+    productTimers: (r.product_timers ?? []) as number[],
+    productId: r.product_id as string | null,
+    productName: r.product_name as string | null,
+    image: productImage(r.image_url, r.image_public_id, 200),
+  }));
 }

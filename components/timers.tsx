@@ -9,12 +9,13 @@ import { formatClock } from "@/lib/slots";
 // Beklemeli adımlar için geri sayım. Sayaçlar kabukta yaşar; sayfa değişince durmaz,
 // sayfa yenilenince tarayıcı belleğinden geri yüklenir.
 
-export type RunningTimer = { itemId: string; day: string; label: string; endsAt: number; total: number };
+/** markable: süre bitince "Yapıldı" olarak işaretlenebilir (dinlenme sayaçlarında false) */
+export type RunningTimer = { itemId: string; day: string; label: string; endsAt: number; total: number; markable?: boolean };
 
 type TimerApi = {
   timers: RunningTimer[];
   now: number;
-  start: (t: { itemId: string; day: string; label: string; seconds: number }) => void;
+  start: (t: { itemId: string; day: string; label: string; seconds: number; markable?: boolean }) => void;
   stop: (itemId: string) => void;
 };
 
@@ -139,13 +140,13 @@ export function TimerProvider({ children }: { children: React.ReactNode }) {
     return () => window.clearInterval(id);
   }, [finished.length]);
 
-  const start = useCallback((t: { itemId: string; day: string; label: string; seconds: number }) => {
+  const start = useCallback((t: { itemId: string; day: string; label: string; seconds: number; markable?: boolean }) => {
     unlockAudio();
     const endsAt = Date.now() + t.seconds * 1000;
     setNow(Date.now());
     setTimers((prev) => [
       ...prev.filter((x) => x.itemId !== t.itemId),
-      { itemId: t.itemId, day: t.day, label: t.label, endsAt, total: t.seconds },
+      { itemId: t.itemId, day: t.day, label: t.label, endsAt, total: t.seconds, markable: t.markable ?? true },
     ]);
   }, []);
 
@@ -202,11 +203,13 @@ function FinishedDialog({ timer, onClose }: { timer: RunningTimer; onClose: () =
         <p className="muted">{formatClock(timer.total)} tamamlandı.</p>
         {error && <p className="form-error">{error}</p>}
         <div className="stack" style={{ marginTop: 16 }}>
-          <button type="button" className="btn btn-primary btn-block btn-lg" onClick={markDone} disabled={busy}>
-            <Check size={18} /> Yapıldı olarak işaretle
-          </button>
-          <button ref={closeRef} type="button" className="btn btn-ghost btn-block" onClick={onClose}>
-            Kapat
+          {timer.markable !== false && (
+            <button type="button" className="btn btn-primary btn-block btn-lg" onClick={markDone} disabled={busy}>
+              <Check size={18} /> Yapıldı olarak işaretle
+            </button>
+          )}
+          <button ref={closeRef} type="button" className={`btn btn-block ${timer.markable === false ? "btn-primary btn-lg" : "btn-ghost"}`} onClick={onClose}>
+            {timer.markable === false ? "Tamam, devam" : "Kapat"}
           </button>
         </div>
       </div>

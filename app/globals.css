@@ -455,8 +455,9 @@ p {
   width: var(--size, 34px);
   height: var(--size, 34px);
   border-radius: 50%;
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
   background: var(--accent-soft);
   color: var(--accent);
@@ -947,44 +948,55 @@ textarea.input {
 /* ---------- ürün görseli ---------- */
 
 .thumb {
+  /* Ürün fotoğrafı kutusu: her temada beyaz, dikey (4:5) çünkü ürünlerin çoğu şişe/tüp.
+     Aynı bağlamdaki bütün kutular aynı boyutta; fotoğraf taşmadan ortalanır. */
   --s: 56px;
   flex: none;
   width: var(--s);
-  height: var(--s);
-  padding: calc(var(--s) * 0.08);
+  height: calc(var(--s) * 1.25);
+  padding: 3px;
   border-radius: 12px;
   border: 1px solid var(--line);
-  background: #ffffff; /* ürün fotoğrafları her temada beyaz kutuda */
-  display: grid;
-  place-items: center;
+  background: #ffffff;
+  /* flex: içteki görselin %100 yüksekliği kutunun gerçek yüksekliğine göre hesaplansın
+     (grid satırı içeriğe göre uzayıp görseli taşırıyordu) */
+  display: flex;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
   color: #12343a;
 }
 
 .thumb img {
+  display: block;
   width: 100%;
   height: 100%;
+  min-width: 0;
+  min-height: 0;
   object-fit: contain;
 }
 
 .thumb.xs {
-  --s: 36px;
+  --s: 40px;
   border-radius: 9px;
+  padding: 2px;
 }
 
 .thumb.sm {
-  --s: 44px;
+  --s: 52px;
   border-radius: 10px;
 }
 
 .thumb.lg {
-  --s: 88px;
+  --s: 96px;
   border-radius: 14px;
+  padding: 6px;
 }
 
 .thumb.xl {
-  --s: 120px;
+  --s: 128px;
   border-radius: 16px;
+  padding: 8px;
 }
 
 .thumb .fallback {

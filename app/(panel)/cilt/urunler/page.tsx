@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { Plus, TriangleAlert } from "lucide-react";
+import { ListOrdered, Plus, TriangleAlert } from "lucide-react";
 import { ProductsView } from "@/components/skin/products-view";
 import { requireUser } from "@/lib/auth/session";
 import { listProducts } from "@/lib/skin";
@@ -19,9 +19,14 @@ export default async function ProductsPage() {
           <h2>Ürünler ve rutin</h2>
           <p className="muted">Önem sırasına göre. Ürünü düzenleyerek hangi zaman grubunda olduğunu değiştirebilirsin.</p>
         </div>
-        <Link href="/cilt/urunler/yeni" className="btn btn-primary">
-          <Plus size={18} /> Ürün ekle
-        </Link>
+        <div className="row">
+          <Link href="/cilt/urunler/rutin" className="btn btn-ghost">
+            <ListOrdered size={18} /> Rutini düzenle
+          </Link>
+          <Link href="/cilt/urunler/yeni" className="btn btn-primary">
+            <Plus size={18} /> Ürün ekle
+          </Link>
+        </div>
       </div>
 
       {products.length === 0 ? (

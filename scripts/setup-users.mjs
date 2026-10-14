@@ -14,6 +14,7 @@ import { randomInt } from "node:crypto";
 import bcrypt from "bcryptjs";
 import { Client } from "@neondatabase/serverless";
 import { PRODUCTS, seedSkin } from "./seed/cengiz-cilt.mjs";
+import { seedNutrition } from "./seed/cengiz-beslenme.mjs";
 
 const ACCOUNT = "cengizaysenur";
 const PROFILES = [
@@ -22,12 +23,14 @@ const PROFILES = [
     displayName: "Cengiz Kaim",
     skinMetrics: ["kuruluk", "yaglanma", "sivilce", "hassasiyet", "tiras"],
     seedSkin: true,
+    seedNutrition: true,
   },
   {
     username: "aysenur",
     displayName: "Ayşenur Arslan",
     skinMetrics: ["kuruluk", "yaglanma", "sivilce", "hassasiyet"],
     seedSkin: false, // ürünleri koda gömülmez; arayüzden eklenir
+    seedNutrition: false,
   },
 ];
 
@@ -102,6 +105,9 @@ try {
         }
         if (p.seedSkin && (await seedSkin(client, userId))) {
           console.log(`  ${p.displayName}: ${PRODUCTS.length} ürün ve rutin adımları yüklendi.`);
+        }
+        if (p.seedNutrition && (await seedNutrition(client, userId))) {
+          console.log(`  ${p.displayName}: 7 günlük akşam planı, notlar ve su hedefi yüklendi.`);
         }
       }
       await client.query("commit");

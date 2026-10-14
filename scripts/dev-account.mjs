@@ -7,6 +7,7 @@ import bcrypt from "bcryptjs";
 import { Client } from "@neondatabase/serverless";
 import { v2 as cloudinary } from "cloudinary";
 import { seedSkin } from "./seed/cengiz-cilt.mjs";
+import { seedNutrition } from "./seed/cengiz-beslenme.mjs";
 
 const ACCOUNT = "deneme";
 const PROFILES = [
@@ -60,7 +61,10 @@ try {
         "insert into users (account_id, username, display_name, skin_metrics) values ($1, $2, $3, $4) returning id",
         [rows[0].id, p.username, p.displayName, ["kuruluk", "yaglanma", "sivilce", "hassasiyet", "tiras"]],
       );
-      if (p.seed) await seedSkin(client, res.rows[0].id);
+      if (p.seed) {
+        await seedSkin(client, res.rows[0].id);
+        await seedNutrition(client, res.rows[0].id);
+      }
     }
     await client.query("commit");
     await setEnv("DENEME_SIFRE", password);

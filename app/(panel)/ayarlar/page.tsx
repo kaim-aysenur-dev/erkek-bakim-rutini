@@ -5,10 +5,12 @@ import { Users } from "lucide-react";
 import { LogoutButton } from "@/components/logout-button";
 import { PasswordForm } from "@/components/password-form";
 import { ProfileForm } from "@/components/profile-form";
+import { SkinMetricsForm } from "@/components/skin-metrics-form";
 import { ThemeSwitcher } from "@/components/theme-switcher";
 import { requireUser } from "@/lib/auth/session";
 import { imageUrl } from "@/lib/cloudinary";
 import { THEME_COOKIE, parseTheme } from "@/lib/theme";
+import type { SkinMetric } from "@/lib/slots";
 
 export const metadata: Metadata = { title: "Ayarlar" };
 
@@ -34,6 +36,14 @@ export default async function SettingsPage() {
           </Link>
         </div>
         <ProfileForm name={user.displayName} avatarUrl={avatarUrl} />
+      </section>
+
+      <section className="card stack" aria-labelledby="olcutler">
+        <div>
+          <h2 id="olcutler">Cilt günlüğü ölçütleri</h2>
+          <p className="muted">Günlükte 1–5 puanlanacak başlıklar. Kapattığın ölçütlerin eski puanları silinmez.</p>
+        </div>
+        <SkinMetricsForm initial={user.skinMetrics as SkinMetric[]} />
       </section>
 
       <section className="card stack" aria-labelledby="sifre">
