@@ -25,6 +25,7 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
           <LoginForm next={next} />
         </section>
         <p className="login-foot">Bu site yalnızca iki kişiye özeldir; herkese açık kayıt yoktur.</p>
+        <p className="login-foot">love</p>
       </main>
     </div>
   );
