@@ -190,10 +190,10 @@ async function activeDays(userId: string, from: string, to: string) {
       left join activity_types t on t.id = s.type_id
       where s.user_id = ${userId} and s.day between ${from} and ${to}
       union all
-      select day, null, null, 'infinity'::timestamptz from activity_days
+      select day, null::uuid, null::text, 'infinity'::timestamptz from activity_days
       where user_id = ${userId} and workout_done and day between ${from} and ${to}
       union all
-      select distinct day, null, null, 'infinity'::timestamptz from workout_sets
+      select distinct day, null::uuid, null::text, 'infinity'::timestamptz from workout_sets
       where user_id = ${userId} and day between ${from} and ${to}
     )
     select to_char(day, 'YYYY-MM-DD') as day, type_id, color from d order by day, created_at`;
