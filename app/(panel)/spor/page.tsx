@@ -1,13 +1,21 @@
 import type { Metadata } from "next";
-import { WorkoutPlanEditor } from "@/components/sport/workout-plan";
+import { WeekOverview } from "@/components/sport/week-overview";
 import { requireUser } from "@/lib/auth/session";
-import { todayIstanbul, weekdayIndex } from "@/lib/dates";
-import { getWorkoutPlan, listExercises } from "@/lib/sport";
+import { todayIstanbul } from "@/lib/dates";
+import { getGoal, getWeekProgress, lastByType, listTypes, recentSessions } from "@/lib/sport-activities";
 
-export const metadata: Metadata = { title: "Spor · Plan" };
+export const metadata: Metadata = { title: "Spor · Bu hafta" };
 
-export default async function SportPlanPage() {
+export default async function SportWeekPage() {
   const user = await requireUser();
-  const [plan, exercises] = await Promise.all([getWorkoutPlan(user.id), listExercises(user.id)]);
-  return <WorkoutPlanEditor plan={plan} exercises={exercises} todayWeekday={weekdayIndex(todayIstanbul())} />;
+  const today = todayIstanbul();
+  const [goal, types, sessions, last] = await Promise.all([
+    getGoal(user.id),
+    listTypes(user.id),
+    recentSessions(user.id),
+    lastByType(user.id),
+  ]);
+  const progress = await getWeekProgress(user.id, today, goal);
+
+  return <WeekOverview key={today} today={today} goal={goal} types={types} progress={progress} sessions={sessions} last={last} />;
 }

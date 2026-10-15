@@ -6,6 +6,7 @@ import { THEME_COOKIE, parseTheme } from "@/lib/theme";
 import "./globals.css";
 import "./sections.css";
 import "./sections-2.css";
+import "./sections-3.css";
 
 // Başlıklar: yumuşak serif (SOFT ekseni açık). Metin ve sayılar: DM Sans (tabular rakamlar CSS'te).
 const display = Fraunces({

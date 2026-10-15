@@ -107,8 +107,8 @@ export function TodayView({ today, week, items, initialChecks, meals, mealChecks
           <Link href="/beslenme" className="btn btn-ghost">
             Beslenme planı
           </Link>
-          <Link href="/spor" className="btn btn-ghost">
-            Antrenman planı
+          <Link href="/spor/hedef" className="btn btn-ghost">
+            Spor hedefi
           </Link>
         </div>
       </div>

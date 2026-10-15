@@ -33,6 +33,10 @@
   --on-ok: #ffffff;
   --on-bad: #ffffff;
   --on-wait: #ffffff;
+  --on-am: #ffffff;
+  --on-pm: #ffffff;
+  --on-shower: #ffffff;
+  --on-week: #ffffff;
 
   /* arka plan parlamaları (koyu temada kapalı: düz zemin) */
   --glow-warm: color-mix(in oklab, var(--am-soft) 90%, transparent);
@@ -108,6 +112,10 @@
     --on-ok: #16210f;
     --on-bad: #2b130c;
     --on-wait: #2a1f08;
+    --on-am: #2a1f08;
+    --on-pm: #1b1733;
+    --on-shower: #0d1f2a;
+    --on-week: #2a1222;
     --glow-warm: transparent;
     --glow-green: transparent;
     --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3);
@@ -153,6 +161,10 @@
   --on-ok: #16210f;
   --on-bad: #2b130c;
   --on-wait: #2a1f08;
+  --on-am: #2a1f08;
+  --on-pm: #1b1733;
+  --on-shower: #0d1f2a;
+  --on-week: #2a1222;
   --glow-warm: transparent;
   --glow-green: transparent;
   --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3);
@@ -161,6 +173,7 @@
   --scrim: rgb(0 0 0 / 0.55);
   color-scheme: dark;
 }
+
 
 /* ---------- temel ---------- */
 
