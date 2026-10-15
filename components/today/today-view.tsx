@@ -147,7 +147,15 @@ export function TodayView({ today, week, items, initialChecks, meals, mealChecks
               <h2 id={`slot-${slot}`} className="tag" data-slot={slot}>
                 Cilt · {SLOT_LABEL[slot]}
               </h2>
-              <span className="slot-count num">{count === group.length ? "Tamam ✓" : `${count}/${group.length}`}</span>
+              {count === group.length ? (
+                <span className="slot-count is-complete">
+                  <Check size={14} strokeWidth={2.5} aria-hidden="true" /> Tamam
+                </span>
+              ) : (
+                <span className="slot-count num">
+                  {count}/{group.length}
+                </span>
+              )}
             </div>
             <ol className="steps">
               {group.map((item, index) => (
@@ -240,7 +248,9 @@ export function TodayView({ today, week, items, initialChecks, meals, mealChecks
               ))}
             </ol>
           ) : (
-            <p className="muted">Bu haftanın hedefleri tamam. ✓</p>
+            <p className="form-ok row">
+              <Check size={16} strokeWidth={2.5} aria-hidden="true" /> Bu haftanın hedefleri tamam.
+            </p>
           )}
         </section>
       )}
