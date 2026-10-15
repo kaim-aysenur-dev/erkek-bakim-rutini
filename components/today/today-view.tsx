@@ -48,12 +48,14 @@ export function TodayView({ today, week, items, initialChecks, meals, mealChecks
   const isDone = (id: string) => checked.has(checkKey(today, id));
   const daily = items.filter((i) => DAILY_SLOTS.includes(i.slot));
 
-  // Günün tamamlanması: cilt günlük adımları + öğünler + su hedefi + planlı antrenman
-  const total = daily.length + meals.length + (water.tracked ? 1 : 0) + (workout.planned ? 1 : 0);
+  // Günün tamamlanması: cilt günlük adımları + öğünler + su hedefi + planlı antrenman.
+  // Su, ilk kayıttan (ya da öğün planından) itibaren sayılır; bugün ilk bardak eklenince de sayılmaya başlar.
+  const waterCounted = water.tracked || glasses > 0;
+  const total = daily.length + meals.length + (waterCounted ? 1 : 0) + (workout.planned ? 1 : 0);
   const done =
     daily.filter((i) => isDone(i.id)).length +
     meals.filter((m) => mealsDone.has(m.meal)).length +
-    (water.tracked && glasses >= water.target ? 1 : 0) +
+    (waterCounted && glasses >= water.target ? 1 : 0) +
     (workout.planned && workoutDone ? 1 : 0);
   const percent = total ? Math.round((done / total) * 100) : 0;
   const streakBefore = streak.todayComplete ? streak.current - 1 : streak.current;
@@ -166,16 +168,16 @@ export function TodayView({ today, week, items, initialChecks, meals, mealChecks
         );
       })}
 
-      {(meals.length > 0 || water.tracked) && (
-        <section className="slot-block" aria-labelledby="slot-beslenme">
-          <div className="slot-head">
-            <h2 id="slot-beslenme" className="tag tag-food">
-              Beslenme
-            </h2>
-            <Link href="/beslenme/takip" className="slot-link">
-              Takip <ChevronRight size={14} />
-            </Link>
-          </div>
+      <section className="slot-block" aria-labelledby="slot-beslenme">
+        <div className="slot-head">
+          <h2 id="slot-beslenme" className="tag tag-food">
+            Beslenme
+          </h2>
+          <Link href="/beslenme/takip" className="slot-link">
+            Takip <ChevronRight size={14} />
+          </Link>
+        </div>
+        {meals.length > 0 && (
           <ol className="steps">
             {meals.map((m) => {
               const d = mealsDone.has(m.meal);
@@ -195,13 +197,11 @@ export function TodayView({ today, week, items, initialChecks, meals, mealChecks
               );
             })}
           </ol>
-          {water.tracked && (
-            <div className="today-water">
-              <WaterCounter day={today} initial={water.initial} target={water.target} glassMl={water.glassMl} sportDay={water.sportDay} onChange={setGlasses} />
-            </div>
-          )}
-        </section>
-      )}
+        )}
+        <div className="today-water">
+          <WaterCounter day={today} initial={water.initial} target={water.target} glassMl={water.glassMl} sportDay={water.sportDay} onChange={setGlasses} />
+        </div>
+      </section>
 
       {workout.planned && (
         <section className="slot-block" aria-labelledby="slot-spor">

@@ -1,7 +1,7 @@
 import "server-only";
 import { sql } from "@/lib/db";
 import { addDays, weekdayIndex } from "@/lib/dates";
-import { getPlan, planSince } from "@/lib/nutrition";
+import { getPlan, planSince, waterSince } from "@/lib/nutrition";
 
 // Günün tamamlanması ve seri: cilt (günlük adımlar) + plandaki öğünler + su hedefi + planlı antrenman.
 // Her bölüm, kurulduğu günden itibaren sayılır; öncesi "eksik" sayılmaz.
@@ -11,7 +11,7 @@ export type Streak = { current: number; best: number; todayComplete: boolean };
 export async function getOverallStreak(userId: string, today: string, days = 400): Promise<Streak> {
   const from = addDays(today, -days);
   const db = sql();
-  const [skinItems, skinChecks, plan, mealsSince, mealChecks, water, settings, training, workoutSinceRows, activity] =
+  const [skinItems, skinChecks, plan, mealsSince, waterFrom, mealChecks, water, settings, training, workoutSinceRows, activity] =
     await Promise.all([
       db`select ri.id, to_char((ri.created_at at time zone 'Europe/Istanbul')::date, 'YYYY-MM-DD') as since
          from routine_items ri left join products p on p.id = ri.product_id
@@ -20,6 +20,7 @@ export async function getOverallStreak(userId: string, today: string, days = 400
       db`select to_char(day, 'YYYY-MM-DD') as day, item_id from checks where user_id = ${userId} and day >= ${from}`,
       getPlan(userId),
       planSince(userId),
+      waterSince(userId),
       db`select to_char(day, 'YYYY-MM-DD') as day, meal from meal_checks where user_id = ${userId} and day >= ${from}`,
       db`select to_char(day, 'YYYY-MM-DD') as day, water_glasses from nutrition_days where user_id = ${userId} and day >= ${from}`,
       db`select water_target, water_target_sport from users where id = ${userId}`,
@@ -58,6 +59,8 @@ export async function getOverallStreak(userId: string, today: string, days = 400
         total++;
         if (mealChecked.has(`${day}|${meal}`)) done++;
       }
+    }
+    if (waterFrom && day >= waterFrom) {
       total++;
       if ((waterByDay.get(day) ?? 0) >= (trainingDays.has(wd) ? targetSport : target)) done++;
     }

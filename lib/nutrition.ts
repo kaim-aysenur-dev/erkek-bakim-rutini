@@ -60,6 +60,18 @@ export async function planSince(userId: string): Promise<string | null> {
   return row?.since ?? null;
 }
 
+/** Su hedefi ne zamandan beri sayılır: öğün planının kurulduğu ya da ilk su kaydının yapıldığı gün (hangisi önceyse) */
+export async function waterSince(userId: string): Promise<string | null> {
+  const [row] = await sql()`
+    select to_char(least(
+      (select (min(i.created_at) at time zone 'Europe/Istanbul')::date
+         from meal_plan_items i join meal_plans p on p.id = i.plan_id
+         where p.user_id = ${userId} and not p.is_template),
+      (select min(day) from nutrition_days where user_id = ${userId} and water_glasses > 0)
+    ), 'YYYY-MM-DD') as since`;
+  return row?.since ?? null;
+}
+
 /* ---------- şablonlar ---------- */
 
 export type Template = { id: string; name: string; meals: number; updatedAt: string };

@@ -3,7 +3,7 @@ import { TodayView } from "@/components/today/today-view";
 import { requireUser } from "@/lib/auth/session";
 import { formatDayLong, todayIstanbul, weekDays, weekStart, weekdayIndex } from "@/lib/dates";
 import type { Meal } from "@/lib/meals";
-import { getMealChecks, getNutritionDays, getPlanForWeekday, getWaterSettings, planSince } from "@/lib/nutrition";
+import { getMealChecks, getNutritionDays, getPlanForWeekday, getWaterSettings, waterSince } from "@/lib/nutrition";
 import { getOverallStreak } from "@/lib/overview";
 import { getCheckKeys, getRoutine } from "@/lib/skin";
 import { getActivity, getWorkoutPlan } from "@/lib/sport";
@@ -25,14 +25,14 @@ export default async function TodayPage() {
   const today = todayIstanbul();
   const wd = weekdayIndex(today);
   const week = weekDays(weekStart(today));
-  const [items, checks, meals, mealChecks, nutritionDay, water, mealsSince, workoutPlan, activity, streak] = await Promise.all([
+  const [items, checks, meals, mealChecks, nutritionDay, water, waterFrom, workoutPlan, activity, streak] = await Promise.all([
     getRoutine(user.id),
     getCheckKeys(user.id, week[0]!, week[6]!),
     getPlanForWeekday(user.id, wd),
     getMealChecks(user.id, today, today),
     getNutritionDays(user.id, today, today),
     getWaterSettings(user.id),
-    planSince(user.id),
+    waterSince(user.id),
     getWorkoutPlan(user.id),
     getActivity(user.id, today, today),
     getOverallStreak(user.id, today),
@@ -57,7 +57,7 @@ export default async function TodayPage() {
         meals={meals}
         mealChecks={mealChecks.map((k) => k.split("|")[1] as Meal)}
         water={{
-          tracked: Boolean(mealsSince),
+          tracked: Boolean(waterFrom),
           initial: nutritionDay[0]?.water ?? 0,
           target: sportDay ? water.targetSport : water.target,
           glassMl: water.glassMl,
