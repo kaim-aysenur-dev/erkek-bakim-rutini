@@ -33,7 +33,7 @@
   padding: 20px;
   border-radius: var(--radius);
   background:
-    radial-gradient(120% 140% at 0% 0%, color-mix(in oklab, var(--accent-soft) 80%, transparent), transparent 60%),
+    radial-gradient(120% 140% at 0% 0%, var(--glow-green), transparent 60%),
     var(--surface);
   border: 1px solid var(--line);
   box-shadow: var(--shadow-card);
@@ -142,8 +142,8 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  background: var(--ok-soft);
-  color: var(--ok);
+  background: var(--ok);
+  color: var(--on-ok);
   font-weight: 600;
 }
 
@@ -171,9 +171,8 @@
   transition: border-color 0.2s var(--ease), background-color 0.2s var(--ease), box-shadow 0.2s var(--ease);
 }
 
+/* tamamlanan adım: zemin aynı kalır, durumu dolu yeşil işaret ve üstü çizili başlık anlatır */
 .step.is-done {
-  background: color-mix(in oklab, var(--ok-soft) 40%, var(--bg));
-  border-color: color-mix(in oklab, var(--ok) 18%, var(--line));
   box-shadow: none;
 }
 
@@ -212,7 +211,7 @@
 .step.is-done .step-check {
   background: var(--ok);
   border-color: var(--ok);
-  color: var(--surface);
+  color: var(--on-ok);
   animation: check-pop 0.28s var(--ease);
 }
 
@@ -568,32 +567,34 @@ details.as-needed[open] summary .chev {
   transform: scale(0.94);
 }
 
+/* durum kutuları dolu renkli; ikon üstünde kontrastlı (--on-*) */
 .cell[data-state="done"] {
-  background: var(--ok-soft);
-  color: var(--ok);
+  background: var(--ok);
+  color: var(--on-ok);
 }
 
 .cell[data-state="missed"] {
-  background: var(--bad-soft);
-  color: var(--bad);
+  background: var(--bad);
+  color: var(--on-bad);
 }
 
 .cell[data-state="pending"] {
-  background: var(--wait-soft);
-  color: var(--wait);
-  box-shadow: inset 0 0 0 1.5px var(--wait);
+  background: var(--wait);
+  color: var(--on-wait);
 }
 
 .cell[data-state="upcoming"] {
-  background: var(--idle-soft);
+  background: var(--surface-2);
   color: var(--idle);
+  box-shadow: inset 0 0 0 1px var(--line);
   cursor: default;
 }
 
 .cell[data-state="open"] {
-  background: transparent;
+  background: var(--surface);
   box-shadow: inset 0 0 0 1.5px var(--line-strong);
 }
+
 
 .cell.mini {
   display: inline-grid;

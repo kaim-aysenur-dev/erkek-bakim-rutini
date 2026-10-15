@@ -29,6 +29,14 @@
   --wait-soft: #f7ebd2;
   --idle: #b4a897;
   --idle-soft: #ede6db;
+  /* dolu durum kutularının üstündeki ikon rengi */
+  --on-ok: #ffffff;
+  --on-bad: #ffffff;
+  --on-wait: #ffffff;
+
+  /* arka plan parlamaları (koyu temada kapalı: düz zemin) */
+  --glow-warm: color-mix(in oklab, var(--am-soft) 90%, transparent);
+  --glow-green: color-mix(in oklab, var(--accent-soft) 90%, transparent);
 
   /* zaman etiketleri: aynı sıcaklıkta, düşük doygunluk */
   --am: #a96f17;
@@ -97,6 +105,11 @@
     --week-soft: #382532;
     --need: #e69a83;
     --need-soft: #3a2520;
+    --on-ok: #16210f;
+    --on-bad: #2b130c;
+    --on-wait: #2a1f08;
+    --glow-warm: transparent;
+    --glow-green: transparent;
     --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3);
     --shadow-card: 0 1px 2px rgb(0 0 0 / 0.25);
     --shadow: 0 2px 4px rgb(0 0 0 / 0.3), 0 18px 40px -12px rgb(0 0 0 / 0.5);
@@ -137,6 +150,11 @@
   --week-soft: #382532;
   --need: #e69a83;
   --need-soft: #3a2520;
+  --on-ok: #16210f;
+  --on-bad: #2b130c;
+  --on-wait: #2a1f08;
+  --glow-warm: transparent;
+  --glow-green: transparent;
   --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.3);
   --shadow-card: 0 1px 2px rgb(0 0 0 / 0.25);
   --shadow: 0 2px 4px rgb(0 0 0 / 0.3), 0 18px 40px -12px rgb(0 0 0 / 0.5);
@@ -898,8 +916,8 @@ textarea.input {
 .login-page {
   min-height: 100dvh;
   background:
-    radial-gradient(110% 55% at 0% 0%, color-mix(in oklab, var(--am-soft) 90%, transparent), transparent 62%),
-    radial-gradient(90% 50% at 100% 100%, color-mix(in oklab, var(--accent-soft) 90%, transparent), transparent 62%),
+    radial-gradient(110% 55% at 0% 0%, var(--glow-warm), transparent 62%),
+    radial-gradient(90% 50% at 100% 100%, var(--glow-green), transparent 62%),
     var(--bg);
 }
 
@@ -1176,7 +1194,8 @@ textarea.input {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background:
-    radial-gradient(80% 60% at 50% 0%, color-mix(in oklab, var(--accent-soft) 70%, transparent), transparent 70%),
+    radial-gradient(80% 60% at 50% 0%, var(--glow-green), transparent 70%),
+
     var(--surface);
   color: var(--muted);
   box-shadow: var(--shadow-card);
