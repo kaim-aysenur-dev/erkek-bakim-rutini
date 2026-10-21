@@ -7,6 +7,7 @@ import "./globals.css";
 import "./sections.css";
 import "./sections-2.css";
 import "./sections-3.css";
+import "./sections-4.css";
 
 // Başlıklar: yumuşak serif (SOFT ekseni açık). Metin ve sayılar: DM Sans (tabular rakamlar CSS'te).
 const display = Fraunces({

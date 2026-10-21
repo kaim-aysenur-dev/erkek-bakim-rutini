@@ -4,6 +4,7 @@ const ITEMS = [
   { href: "/cilt", label: "Takip", exact: true },
   { href: "/cilt/urunler", label: "Ürünler" },
   { href: "/cilt/gunluk", label: "Günlük" },
+  { href: "/cilt/yuz-yogasi", label: "Yüz yogası" },
   { href: "/cilt/seruven", label: "Serüven" },
 ];
 
