@@ -35,3 +35,4 @@ for (const [file, , svg] of outputs) {
 
 await writeFile("public/icons/icon.svg", mark({ size: 64, radius: 14 }));
 console.log("icon.svg");
+
