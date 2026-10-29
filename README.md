@@ -45,3 +45,4 @@ Aynı değişkenler Vercel'de "sensitive" olarak tanımlıdır.
 - 5 hatalı denemeden sonra (kullanıcı adı ya da IP bazında) 15 dakika bekleme.
 - Her API route'u oturumu sunucuda doğrular ve veriyi seçili profilin `user_id`'si ile filtreler.
 - Herkese açık kayıt yoktur; hesap yalnızca `users:setup` betiğiyle oluşturulur.
+
