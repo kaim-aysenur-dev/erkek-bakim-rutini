@@ -31,3 +31,4 @@ export const config = {
     "/((?!_next/static|_next/image|api/auth/login|manifest.webmanifest|icons/|favicon.ico|robots.txt|sw.js).*)",
   ],
 };
+
