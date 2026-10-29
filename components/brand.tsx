@@ -21,3 +21,4 @@ export function Brand({ href = "/bugun" }: { href?: string }) {
     </Link>
   );
 }
+
