@@ -13,11 +13,12 @@ export const metadata: Metadata = { title: "Kim kullanıyor?" };
 export default async function ProfilePickPage({ searchParams }: PageProps<"/profil-sec">) {
   const session = await requireAccount();
   const rows = await sql()`
-    select id, display_name, avatar_public_id from users
+    select id, display_name, avatar_public_id, lock_hash is not null as locked from users
     where account_id = ${session.accountId} order by created_at, display_name`;
   const profiles = rows.map((r) => ({
     id: r.id as string,
     name: r.display_name as string,
+    locked: Boolean(r.locked),
     avatarUrl: r.avatar_public_id
       ? imageUrl(r.avatar_public_id, { width: 160, height: 160, crop: "fill", gravity: "face" })
       : null,

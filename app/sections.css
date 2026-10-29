@@ -1227,3 +1227,12 @@ details.as-needed[open] summary .chev {
   font-weight: 600;
   color: var(--accent);
 }
+
+.profile-current.is-locked {
+  color: var(--muted);
+}
+
+/* Şifre sorulan kilitli profil */
+.profile-option[aria-pressed="true"] {
+  border-color: var(--accent);
+}
